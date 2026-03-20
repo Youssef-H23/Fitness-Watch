@@ -2,7 +2,8 @@
 #include "DFRobot_BloodOxygen_S.h"
 #include <Adafruit_Sensor.h>
 #include <Adafruit_ADXL345_U.h>
-
+#include <WiFi.h>
+#include <PubSubClient.h>
 // --- BLE Libraries ---
 #include <BLEDevice.h>
 #include <BLEServer.h>
@@ -12,7 +13,6 @@
 // Sensor Objects
 DFRobot_BloodOxygen_S_I2C MAX30102(&Wire, 0x57);
 Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
-
 // --- Accelerometer Variables ---
 #define WINDOW_SIZE 15
 float readings[WINDOW_SIZE];
@@ -24,6 +24,18 @@ unsigned long lastStepTime = 0;
 // --- Health Data Variables ---
 int currentSPO2 = 0;
 int currentBPM = 0;
+
+// Setting WIFI
+const char* ssid = "Wokwi-GUEST"; // Setting your AP SSID
+const char* password = ""; // Setting your AP PSK
+const char* mqttServer = "test.mosquitto.org";
+const char* clientID = "ESP32-wokwi"; // Client ID username+0001
+const char* publishTopic = "HealthData"; // Publish topic
+
+// Setting up WiFi and MQTT client
+WiFiClient espClient;
+PubSubClient client(espClient);
+unsigned long lastMqttReconnectAttempt = 0;
 
 // --- BLE Variables ---
 BLEServer* pServer = NULL;
@@ -48,12 +60,54 @@ class MyServerCallbacks: public BLEServerCallbacks {
     }
 };
 
+// Parameters for using non-blocking delay
+unsigned long previousMillis = 0;
+const long interval = 5000;
+String msgStr = "";      // MQTT message buffer
+
+void setup_wifi() {
+  delay(10);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+
+ // Subscribe callback
+void callback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message arrived in topic: ");
+  Serial.println(topic);
+  Serial.print("Message: ");
+  String data = "";
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)payload[i]);
+    data += (char)payload[i];
+  }
+  Serial.println();
+  Serial.print("Message size: ");
+  Serial.println(length);
+  Serial.println();
+  Serial.println("-----------------------");
+  Serial.println(data);
+}
+
+
+
+
 void setup() {
   Serial.begin(115200);
   
   // Start I2C for ESP32-C3
   Wire.begin(8, 9); 
-
+setup_wifi();
+  client.setServer(mqttServer, 1883); // Setting MQTT server
+  client.setCallback(callback); // Define function which will be called when a message is received.
   // Init ADXL345
   if(!accel.begin()) {
     Serial.println("ADXL345 not found!");
@@ -97,19 +151,38 @@ void setup() {
 }
 
 void loop() {
-  // 1. Heart Rate & SPO2 (Updates every 4 seconds)
+  unsigned long currentMillis = millis(); 
+
+  // --- 1. Non-Blocking MQTT Reconnect ---
+  if (!client.connected()) { 
+    if (currentMillis - lastMqttReconnectAttempt > 5000) { // بيحاول كل 5 ثواني من غير ما يوقف الكود
+      lastMqttReconnectAttempt = currentMillis;
+      Serial.print("Attempting MQTT connection...");
+      if (client.connect(clientID)) {
+        Serial.println("connected");
+        // مش محتاجين نعمل subscribe هنا طالما مش هنستقبل حاجة
+      } else {
+        Serial.print("failed, rc=");
+        Serial.println(client.state());
+      }
+    }
+  } else {
+    client.loop();
+  }
+
+  // --- 2. Heart Rate & SPO2 (Updates every 4 seconds) ---
   static unsigned long lastOxyTime = 0;
-  if (millis() - lastOxyTime > 4000) {
+  if (currentMillis - lastOxyTime > 4000) {
     MAX30102.getHeartbeatSPO2();
     currentSPO2 = MAX30102._sHeartbeatSPO2.SPO2;
     currentBPM = MAX30102._sHeartbeatSPO2.Heartbeat;
     
     Serial.print("SPO2: "); Serial.print(currentSPO2); Serial.print("% ");
     Serial.print("BPM: "); Serial.println(currentBPM);
-    lastOxyTime = millis();
+    lastOxyTime = currentMillis;
   }
 
-  // 2. Accelerometer / Step Counting
+  // --- 3. Accelerometer / Step Counting ---
   sensors_event_t event;
   accel.getEvent(&event);
   float magnitude = sqrt(sq(event.acceleration.x) + sq(event.acceleration.y) + sq(event.acceleration.z));
@@ -120,27 +193,36 @@ void loop() {
   readIndex = (readIndex + 1) % WINDOW_SIZE;
   float smoothed = total / WINDOW_SIZE;
 
-  if (smoothed > threshold && !stepDetected && (millis() - lastStepTime > 300)) {
+  if (smoothed > threshold && !stepDetected && (currentMillis - lastStepTime > 300)) {
     stepCount++;
     stepDetected = true;
-    lastStepTime = millis();
+    lastStepTime = currentMillis;
     Serial.print("Steps: "); Serial.println(stepCount);
   }
   if (smoothed < threshold) stepDetected = false;
 
-  // 3. Send Data via BLE
+  // --- 4. Send Data via BLE (Every 1 second) ---
   static unsigned long lastBleTime = 0;
-  // Send data every 1 second, but only if a device is connected
-  if (deviceConnected && (millis() - lastBleTime > 1000)) {
-    char bleString[50]; // Buffer to hold our formatted string
-    
-    // Format: "HR: 75 | SpO2: 98% | Steps: 10"
+  if (deviceConnected && (currentMillis - lastBleTime > 1000)) {
+    char bleString[50]; 
     snprintf(bleString, sizeof(bleString), "HR:%d | SpO2:%d%% | Steps:%d", currentBPM, currentSPO2, stepCount);
-    
     pCharacteristic->setValue(bleString);
-    pCharacteristic->notify(); // Push the update to nRF Connect
+    pCharacteristic->notify(); 
+    lastBleTime = currentMillis;
+  }
+
+  // --- 5. Send Data via MQTT (Every 5 seconds) ---
+  static unsigned long lastMqttTime = 0;
+  if (client.connected() && (currentMillis - lastMqttTime > 5000)) {
+    msgStr = String(currentBPM) + "," + String(currentSPO2) + "," + String(stepCount);
     
-    lastBleTime = millis();
+    Serial.print("PUBLISH DATA: ");
+    Serial.println(msgStr);
+    
+    // سطر واحد بسيط بيبعت الداتا من غير وجع دماغ الـ char array
+    client.publish(publishTopic, msgStr.c_str()); 
+    
+    lastMqttTime = currentMillis;
   }
 
   delay(20); // Small delay for stability
