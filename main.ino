@@ -28,9 +28,9 @@ int currentSPO2 = 0;
 int currentBPM = 0;
 
 // Setting WIFI
-const char* ssid = "Wokwi-GUEST"; // Setting your AP SSID
-const char* password = ""; // Setting your AP PSK
-const char* mqttServer = "test.mosquitto.org";
+const char* ssid = "SondosHamza"; // Setting your AP SSID
+const char* password = "PnCr@1978"; // Setting your AP PSK
+const char* mqttServer = "10.0.0.94";
 const char* clientID = "ESP32-wokwi"; 
 const char* publishTopic = "HealthData"; 
 
@@ -187,7 +187,8 @@ void loop() {
   static unsigned long lastBleTime = 0;
   if (deviceConnected && (currentMillis - lastBleTime > 1000)) {
     char bleString[50]; 
-    snprintf(bleString, sizeof(bleString), "HR:%d | SpO2:%d%% | Steps:%d", currentBPM, currentSPO2, stepCount);
+  // غير السطر ده في كود الأردوينو عشان يبعت أرقام بس بينهم فواصل زي الـ MQTT
+    snprintf(bleString, sizeof(bleString), "%d,%d,%d", currentBPM, currentSPO2, stepCount);
     pCharacteristic->setValue(bleString);
     pCharacteristic->notify(); 
     lastBleTime = currentMillis;
