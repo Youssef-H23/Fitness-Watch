@@ -28,9 +28,9 @@ int currentSPO2 = 0;
 int currentBPM = 0;
 
 // Setting WIFI
-const char* ssid = "SondosHamza"; // Setting your AP SSID
-const char* password = "PnCr@1978"; // Setting your AP PSK
-const char* mqttServer = "10.0.0.94";
+const char* ssid = "GUEST"; // Setting your AP SSID
+const char* password = ""; // Setting your AP PSK
+const char* mqttServer = "test.mosquitto.org";
 const char* clientID = "ESP32-wokwi"; 
 const char* publishTopic = "HealthData"; 
 
