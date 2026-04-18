@@ -136,7 +136,7 @@ void loop() {
 
   // --- 1. MQTT Non-Blocking Reconnect ---
   if (!client.connected()) { 
-    if (currentMillis - lastMqttReconnectAttempt > 5000) { 
+    if (currentMillis - lastMqttReconnectAttempt > 4000) { 
       lastMqttReconnectAttempt = currentMillis;
       if (WiFi.status() == WL_CONNECTED) {
         Serial.print("Attempting MQTT connection...");
@@ -196,7 +196,7 @@ void loop() {
 
   // --- 5. Send Data via MQTT (Every 5 seconds) ---
   static unsigned long lastMqttPublishTime = 0;
-  if (client.connected() && (currentMillis - lastMqttPublishTime > 5000)) {
+  if (client.connected() && (currentMillis - lastMqttPublishTime > 4000)) {
     String msgStr = String(currentBPM) + "," + String(currentSPO2) + "," + String(stepCount);
     
     Serial.print("MQTT PUBLISH: ");
