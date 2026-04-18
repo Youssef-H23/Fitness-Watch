@@ -1,0 +1,475 @@
+[
+    {
+        "id": "f9120dfc49ef7a61",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "192af1d2b84e7363",
+        "type": "ui_gauge",
+        "z": "f9120dfc49ef7a61",
+        "name": "",
+        "group": "4f9fec7a8dea7f92",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "gtype": "compass",
+        "title": "BPM gauge",
+        "label": "Beats Per Minute",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "50",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 790,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "2fc9077d078b4a61",
+        "type": "ui_gauge",
+        "z": "f9120dfc49ef7a61",
+        "name": "",
+        "group": "4f9fec7a8dea7f92",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "compass",
+        "title": "SPO2 gauge",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 810,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "c88112f46591f7bd",
+        "type": "ui_chart",
+        "z": "f9120dfc49ef7a61",
+        "name": "",
+        "group": "4f9fec7a8dea7f92",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "label": "BPM chart",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 790,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3bbe506fd9c2d8d5",
+        "type": "ui_chart",
+        "z": "f9120dfc49ef7a61",
+        "name": "",
+        "group": "4f9fec7a8dea7f92",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "label": "SPO2 chart",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 810,
+        "y": 480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1267a0ade12f9f7f",
+        "type": "mqtt in",
+        "z": "f9120dfc49ef7a61",
+        "name": "",
+        "topic": "HealthData",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "f7718aee67027a6e",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 100,
+        "y": 380,
+        "wires": [
+            [
+                "9f37559086c9d853",
+                "7a506fb8e9ad4340",
+                "c179956fa4e23365",
+                "a49df7d7ac028c18"
+            ]
+        ]
+    },
+    {
+        "id": "9f37559086c9d853",
+        "type": "function",
+        "z": "f9120dfc49ef7a61",
+        "name": "Extract BPM",
+        "func": "var input = msg.payload; // Assuming the input is in msg.payload\n\n// Remove any leading or trailing whitespace\ninput = input.trim();\n\n// Split the input string using commas as the delimiter\nvar values = input.split(',');\n\n// Remove leading and trailing whitespace from each value and convert to float\nvalues = values.map(function (value) {\n    return parseFloat(value.trim());\n});\n\nmsg.payload = values[0]; // Set the output payload to the array of float values\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 340,
+        "wires": [
+            [
+                "192af1d2b84e7363",
+                "c88112f46591f7bd"
+            ]
+        ]
+    },
+    {
+        "id": "7a506fb8e9ad4340",
+        "type": "function",
+        "z": "f9120dfc49ef7a61",
+        "name": "Extract SPO2",
+        "func": "var input = msg.payload; // Assuming the input is in msg.payload\n\n// Remove any leading or trailing whitespace\ninput = input.trim();\n\n// Split the input string using commas as the delimiter\nvar values = input.split(',');\n\n// Remove leading and trailing whitespace from each value and convert to float\nvalues = values.map(function (value) {\n    return parseFloat(value.trim());\n});\n\nmsg.payload = values[1]; // Set the output payload to the array of float values\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 420,
+        "wires": [
+            [
+                "2fc9077d078b4a61",
+                "3bbe506fd9c2d8d5"
+            ]
+        ]
+    },
+    {
+        "id": "c179956fa4e23365",
+        "type": "function",
+        "z": "f9120dfc49ef7a61",
+        "name": "Extract Steps",
+        "func": "var input = msg.payload; // Assuming the input is in msg.payload\n\n// Remove any leading or trailing whitespace\ninput = input.trim();\n\n// Split the input string using commas as the delimiter\nvar values = input.split(',');\n\n// Remove leading and trailing whitespace from each value and convert to float\nvalues = values.map(function (value) {\n    return parseFloat(value.trim());\n});\n\nmsg.payload = values[2]; // Set the output payload to the array of float values\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 580,
+        "wires": [
+            [
+                "ba52a4c6f959945b"
+            ]
+        ]
+    },
+    {
+        "id": "ba52a4c6f959945b",
+        "type": "ui_text",
+        "z": "f9120dfc49ef7a61",
+        "group": "4f9fec7a8dea7f92",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Steps",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 850,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "f76b9276cca573e1",
+        "type": "function",
+        "z": "f9120dfc49ef7a61",
+        "name": "Extract BPM",
+        "func": "var input = msg.payload; // Assuming the input is in msg.payload\n\n// Remove any leading or trailing whitespace\ninput = input.trim();\n\n// Split the input string using commas as the delimiter\nvar values = input.split(',');\n\n// Remove leading and trailing whitespace from each value and convert to float\nvalues = values.map(function (value) {\n    return parseFloat(value.trim());\n});\n\nmsg.payload = values[0]; // Set the output payload to the array of float values\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 40,
+        "wires": [
+            [
+                "192af1d2b84e7363",
+                "c88112f46591f7bd"
+            ]
+        ]
+    },
+    {
+        "id": "5a7273f2399858a7",
+        "type": "function",
+        "z": "f9120dfc49ef7a61",
+        "name": "Extract SPO2",
+        "func": "var input = msg.payload; // Assuming the input is in msg.payload\n\n// Remove any leading or trailing whitespace\ninput = input.trim();\n\n// Split the input string using commas as the delimiter\nvar values = input.split(',');\n\n// Remove leading and trailing whitespace from each value and convert to float\nvalues = values.map(function (value) {\n    return parseFloat(value.trim());\n});\n\nmsg.payload = values[1]; // Set the output payload to the array of float values\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 120,
+        "wires": [
+            [
+                "3bbe506fd9c2d8d5",
+                "2fc9077d078b4a61"
+            ]
+        ]
+    },
+    {
+        "id": "4c55c17f9fcdcdc4",
+        "type": "function",
+        "z": "f9120dfc49ef7a61",
+        "name": "Extract Steps",
+        "func": "var input = msg.payload; // Assuming the input is in msg.payload\n\n// Remove any leading or trailing whitespace\ninput = input.trim();\n\n// Split the input string using commas as the delimiter\nvar values = input.split(',');\n\n// Remove leading and trailing whitespace from each value and convert to float\nvalues = values.map(function (value) {\n    return parseFloat(value.trim());\n});\n\nmsg.payload = values[2]; // Set the output payload to the array of float values\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 200,
+        "wires": [
+            [
+                "ba52a4c6f959945b"
+            ]
+        ]
+    },
+    {
+        "id": "872ae01f92346d43",
+        "type": "ui_template",
+        "z": "f9120dfc49ef7a61",
+        "group": "4f9fec7a8dea7f92",
+        "name": "",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "format": "<div\n    style=\"background: #1a1a1a; padding: 20px; border-radius: 15px; color: white; text-align: center; border: 2px solid #00bcff; font-family: sans-serif;\">\n    <h2 style=\"color: #00bcff; margin-bottom: 5px;\">Health Monitor Sync</h2>\n    <p style=\"font-size: 0.9em; color: #aaa;\">Direct Bluetooth Connection</p>\n\n    <button ng-click=\"connectBLE()\" style=\"background: #00bcff; color: black; border: none; padding: 15px 30px; border-radius: 50px; cursor: pointer; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(0,188,255,0.3);\">\n        🔵 Connect Device\n    </button>\n\n    <div id=\"btStatus\" style=\"margin-top: 20px; font-weight: bold; color: #f1c40f;\">Status: Ready</div>\n</div>\n\n<script>\n    (function(scope) {\n    scope.connectBLE = function() {\n        const status = document.getElementById('btStatus');\n        \n        // استخدام المعرفات اللي في كود الأردوينو بتاعك\n        const serviceUuid = \"4fafc201-1fb5-459e-8fcc-c5c9c331914b\";\n        const charUuid = \"beb5483e-36e1-4688-b7f5-ea07361b26a8\";\n\n        status.innerText = \"Searching for ESP32...\";\n\n        navigator.bluetooth.requestDevice({\n            acceptAllDevices: true,\n            optionalServices: [serviceUuid]\n        })\n        .then(device => {\n            status.innerText = \"Found! Connecting...\";\n            return device.gatt.connect();\n        })\n        .then(server => server.getPrimaryService(serviceUuid))\n        .then(service => service.getCharacteristic(charUuid))\n        .then(characteristic => {\n            status.innerText = \"Connected! Waiting for data...\";\n            status.style.color = \"#00ff88\";\n            \n            return characteristic.startNotifications().then(_ => {\n                characteristic.addEventListener('characteristicvaluechanged', event => {\n                    const decoder = new TextDecoder('utf-8');\n                    const value = decoder.decode(event.target.value);\n                    \n                    // إرسال الداتا للـ Node-RED (هتوصل كـ payload)\n                    scope.send({payload: value});\n                });\n            });\n        })\n        .catch(error => {\n            status.innerText = \"Error: \" + error.message;\n            status.style.color = \"#ff4d4d\";\n        });\n    };\n})(scope);\n</script>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 80,
+        "y": 100,
+        "wires": [
+            [
+                "f76b9276cca573e1",
+                "5a7273f2399858a7",
+                "4c55c17f9fcdcdc4",
+                "2784f85b4a49f322"
+            ]
+        ]
+    },
+    {
+        "id": "2784f85b4a49f322",
+        "type": "function",
+        "z": "f9120dfc49ef7a61",
+        "name": "Extract Cal",
+        "func": "var input = msg.payload; // Assuming the input is in msg.payload\n\n// Remove any leading or trailing whitespace\ninput = input.trim();\n\n// Split the input string using commas as the delimiter\nvar values = input.split(',');\n\n// Remove leading and trailing whitespace from each value and convert to float\nvalues = values.map(function (value) {\n    return parseFloat(value.trim());\n});\nvar calories = values[2] * 40;\nmsg.payload = parseFloat(calories.toFixed(2)); // Set the output payload to the array of float values\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 260,
+        "wires": [
+            [
+                "6dbc4e1b8d59fc07"
+            ]
+        ]
+    },
+    {
+        "id": "6dbc4e1b8d59fc07",
+        "type": "ui_gauge",
+        "z": "f9120dfc49ef7a61",
+        "name": "",
+        "group": "4f9fec7a8dea7f92",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "gtype": "compass",
+        "title": "Calories Burned gauge",
+        "label": "Cal",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 840,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "a49df7d7ac028c18",
+        "type": "function",
+        "z": "f9120dfc49ef7a61",
+        "name": "Extract Cal",
+        "func": "var input = msg.payload; // Assuming the input is in msg.payload\n\n// Remove any leading or trailing whitespace\ninput = input.trim();\n\n// Split the input string using commas as the delimiter\nvar values = input.split(',');\n\n// Remove leading and trailing whitespace from each value and convert to float\nvalues = values.map(function (value) {\n    return parseFloat(value.trim());\n});\nvar calories = values[2] * 40;\nmsg.payload = parseFloat(calories.toFixed(2)); // Set the output payload to the array of float values\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 500,
+        "wires": [
+            [
+                "6dbc4e1b8d59fc07"
+            ]
+        ]
+    },
+    {
+        "id": "4f9fec7a8dea7f92",
+        "type": "ui_group",
+        "name": "Dashboard",
+        "tab": "e01f62a5936387c0",
+        "order": 1,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "f7718aee67027a6e",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "test.mosquitto.org",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "e01f62a5936387c0",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "0be9134fb33714ac",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]
