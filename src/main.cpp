@@ -1,4 +1,5 @@
 #include "DFRobot_BloodOxygen_S.h"
+#include "secrets.h" // Include this file for WiFi credentials (not shown here for security)
 #include <Adafruit_ADXL345_U.h>
 #include <Adafruit_Sensor.h>
 #include <PubSubClient.h>
@@ -28,8 +29,8 @@ int currentSPO2 = 0;
 int currentBPM = 0;
 
 // Setting WIFI
-const char *ssid = "GUEST"; // Setting your AP SSID
-const char *password = "";  // Setting your AP PSK
+const char *ssid = WIFI_SSID;         // Setting your AP SSID
+const char *password = WIFI_PASSWORD; // Setting your AP PSK
 const char *mqttServer = "test.mosquitto.org";
 const char *clientID = "ESP32-wokwi";
 const char *publishTopic = "HealthData";
@@ -85,7 +86,7 @@ void setup_wifi() {
 
 void setup() {
   Serial.begin(115200);
-
+  Serial.println("Initializing System...");
   // Start I2C for ESP32-C3
   Wire.begin(8, 9);
 

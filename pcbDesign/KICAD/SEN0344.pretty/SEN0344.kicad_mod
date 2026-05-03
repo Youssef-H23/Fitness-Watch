@@ -1,0 +1,237 @@
+(footprint "SEN0344"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(property "Reference" "M?"
+		(at -6.35 -12.7 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "9218ea0b-729e-4ce0-8e82-896bebb1a7cf")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "SEN0344"
+		(at 0 1 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "3d44f4b5-f7cf-471a-9006-f66153ef2b54")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "4dd21c0c-c531-4f7a-b274-9bcc359af302")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "0d0b1841-3108-493c-b8e1-50d98e5eb321")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Field4" "${REFERENCE}"
+		(at 0 2.5 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "111a3bff-0117-4b9d-b853-0c9c3a70ba49")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -9 -11)
+		(end -9 11)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e5e1fd40-e0ed-458f-a960-87059289570c")
+	)
+	(fp_line
+		(start -9 11)
+		(end 9 11)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "ae0b9c6b-68a2-4813-a943-84db412c6711")
+	)
+	(fp_line
+		(start 9 -11)
+		(end -9 -11)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e2716974-5813-4857-83b0-b140737f524a")
+	)
+	(fp_line
+		(start 9 11)
+		(end 9 -11)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "4828ca1e-6328-41b0-bbb9-fcbf63e0df68")
+	)
+	(pad "1" thru_hole circle
+		(at -7.62 -6.35)
+		(size 1.6 1.6)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "2de68fc8-3b0e-434d-9449-962774af6490")
+	)
+	(pad "2" thru_hole circle
+		(at -7.62 -3.81)
+		(size 1.6 1.6)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "a86ae383-a8e9-455d-b7ce-4a9485e1a607")
+	)
+	(pad "3" thru_hole circle
+		(at -7.62 -1.27)
+		(size 1.6 1.6)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "905d68d0-6f86-4b69-8e9d-50471c6b6771")
+	)
+	(pad "4" thru_hole circle
+		(at -7.62 1.27)
+		(size 1.6 1.6)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "41bb5ed6-220f-4be2-83ae-62e93f9932c1")
+	)
+	(pad "5" thru_hole circle
+		(at -7.62 3.81)
+		(size 1.6 1.6)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "86a1e206-a141-4871-baae-c0abf346348a")
+	)
+	(pad "6" thru_hole circle
+		(at -7.62 6.35)
+		(size 1.6 1.6)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "76ee25ea-4554-49ba-b460-dabc4849d37a")
+	)
+	(pad "7" thru_hole circle
+		(at 7.62 6.35)
+		(size 1.6 1.6)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "1a6f9b33-4ff7-4a46-8ef9-aa4bdf5684e2")
+	)
+	(pad "8" thru_hole circle
+		(at 7.62 3.81)
+		(size 1.6 1.6)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "3b2441d3-f7f6-4167-a406-227ca302f093")
+	)
+	(pad "9" thru_hole circle
+		(at 7.62 1.27)
+		(size 1.6 1.6)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "30b17f99-6502-46ba-ab82-be36aaae62f0")
+	)
+	(pad "10" thru_hole circle
+		(at 7.62 -1.27)
+		(size 1.6 1.6)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "9629cd0b-e8f0-4c46-94cf-61ec611749da")
+	)
+	(pad "11" thru_hole circle
+		(at 7.62 -3.81)
+		(size 1.6 1.6)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "8ee81f8f-8097-4807-adad-d0732d33a38c")
+	)
+	(pad "12" thru_hole circle
+		(at 7.62 -6.35)
+		(size 1.6 1.6)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "045cd48f-1068-4109-ab72-f2e1dea6edd4")
+	)
+	(embedded_fonts no)
+	(model "/home/moneer/projects/Fitness-Watch/pcbDesign/SEN0344.stp"
+		(offset
+			(xyz 0 0 3)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -0 -0 -0)
+		)
+	)
+	(model "${KICAD10_3DMODEL_DIR}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x06_P2.54mm_Vertical.step"
+		(offset
+			(xyz -7.5 6.5 2.5)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -0 180 -0)
+		)
+	)
+	(model "${KICAD10_3DMODEL_DIR}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x06_P2.54mm_Vertical.step"
+		(offset
+			(xyz 7.5 6.5 2.5)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -0 180 -0)
+		)
+	)
+)

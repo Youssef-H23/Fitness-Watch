@@ -1,0 +1,12 @@
+Info: Processing symbol 'DS1:OLED_128X64_1.3_I2C:LCD_OLED_128X64_1.3_I2C'.
+Info: Processing symbol 'U1:usini_sensors:module_adxl345'.
+Info: Processing symbol 'U2:SEN0344:SEN0344'.
+Info: Processing symbol 'U3:ESP32-C3_SUPERMINI_TH:MODULE_ESP32-C3_SUPERMINI_TH'.
+Remove DS1 'Do not place' fabrication attribute.
+Remove U3 'Do not place' fabrication attribute.
+Warning: Copper zone on F.Cu at (160.5800 mm, 52.5500 mm) has no pads connected to net "".
+Error: Cannot update DS1 (footprint 'OLED_128X64_1.3_I2C:LCD_OLED_128X64_1.3_I2C' not found).
+Error: Cannot update U3 (footprint 'ESP32-C3_SUPERMINI_TH:MODULE_ESP32-C3_SUPERMINI_TH' not found).
+
+
+Info: Total warnings: 1, errors: 2.

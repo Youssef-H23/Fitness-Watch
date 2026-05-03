@@ -1,0 +1,2 @@
+#define WIFI_SSID "WE_963948_24"
+#define WIFI_PASSWORD "986532*+-anw"
