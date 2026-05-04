@@ -1,3 +1,4 @@
+#include <time.h>
 #include <Arduino.h>
 #include <Wire.h>
 #include <WiFi.h>
@@ -40,7 +41,20 @@ void tryReconnectMQTT() {
   }
 }
 
+bool timeSynced = false;
+
 void getTimeString(char *buf, size_t len) {
+  if (timeSynced) {
+    struct tm timeinfo;
+    if (getLocalTime(&timeinfo)) {
+      int hours = timeinfo.tm_hour;
+      const char *ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12;
+      if (hours == 0) hours = 12;
+      snprintf(buf, len, "%d:%02d %s", hours, timeinfo.tm_min, ampm);
+      return;
+    }
+  }
   unsigned long totalSeconds = (millis() / 1000) % (12 * 3600);
   int hours = totalSeconds / 3600;
   int minutes = (totalSeconds % 3600) / 60;
@@ -68,6 +82,16 @@ void setup() {
     Serial.print(".");
   }
   Serial.printf("\nConnected, IP: %s\n", WiFi.localIP().toString().c_str());
+
+  Serial.print("Syncing time from NTP...");
+  configTime(3 * 3600, 0, "pool.ntp.org", "time.nist.gov");
+  struct tm timeinfo;
+  if (getLocalTime(&timeinfo, 10000)) {
+    timeSynced = true;
+    Serial.println(" synced");
+  } else {
+    Serial.println(" failed, using boot time");
+  }
 
   mqttClient.setServer(mqttBroker, 1883);
   mqttClient.setCallback(mqttCallback);
