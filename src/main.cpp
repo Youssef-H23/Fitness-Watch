@@ -154,7 +154,7 @@ void loop() {
   static unsigned long lastPulseUpdate = 0;
   static int pulseRate = random(60, 101);
   static unsigned long lastStepUpdate = 0;
-  static unsigned long lastMqttTest = 0;
+  static unsigned long lastMqttSensor = 0;
   static unsigned long lastSensorDebug = 0;
   static int16_t ax = 0, ay = 0, az = 0;
 
@@ -174,12 +174,38 @@ void loop() {
     lastStepUpdate = millis();
   }
 
-  if (mqttClient.connected() && millis() - lastMqttTest > 5000) {
-    char payload[20];
-    snprintf(payload, sizeof(payload), "%lu", random(0, 99999));
-    mqttClient.publish("test/whatever", payload);
-    Serial.printf("Published test/whatever: %s\n", payload);
-    lastMqttTest = millis();
+  if (mqttClient.connected() && millis() - lastMqttSensor > 3000) {
+    char payload[16];
+
+    snprintf(payload, sizeof(payload), "%lu", steps);
+    mqttClient.publish("signals/steps", payload);
+
+    snprintf(payload, sizeof(payload), "%d", ax);
+    mqttClient.publish("signals/ax", payload);
+
+    snprintf(payload, sizeof(payload), "%d", ay);
+    mqttClient.publish("signals/ay", payload);
+
+    snprintf(payload, sizeof(payload), "%d", az);
+    mqttClient.publish("signals/az", payload);
+
+    long mag = (long)ax * ax + (long)ay * ay + (long)az * az;
+    snprintf(payload, sizeof(payload), "%ld", mag);
+    mqttClient.publish("signals/mag", payload);
+
+    if (sensorHRValue > 0) {
+      snprintf(payload, sizeof(payload), "%d", sensorHRValue);
+    } else {
+      snprintf(payload, sizeof(payload), "-1");
+    }
+    mqttClient.publish("signals/hr", payload);
+
+    snprintf(payload, sizeof(payload), "%d", bloodOxygen._sHeartbeatSPO2.SPO2);
+    mqttClient.publish("signals/spo2", payload);
+
+    Serial.printf("MQTT sent: steps=%lu ax=%d ay=%d az=%d mag=%ld hr=%d spo2=%d\n",
+      steps, ax, ay, az, mag, sensorHRValue, bloodOxygen._sHeartbeatSPO2.SPO2);
+    lastMqttSensor = millis();
   }
 
   if (adxlReady) {
@@ -198,6 +224,8 @@ void loop() {
 
     if (hr > 0 && hr < 250) {
       sensorHRValue = hr;
+    } else {
+      sensorHRValue = 0;
     }
     lastSensorDebug = millis();
   }
