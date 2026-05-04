@@ -5,6 +5,8 @@
 #include <PubSubClient.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
+#include <Adafruit_ADXL345_U.h>
+#include "DFRobot_MAX30102.h"
 #include "secrets.h"
 
 #define SCREEN_WIDTH 128
@@ -13,12 +15,17 @@
 #define SCL_PIN 9
 
 Adafruit_SH1106G display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+Adafruit_ADXL345_Unified adxl = Adafruit_ADXL345_Unified(12345);
+DFRobot_MAX30102 MAX30102;
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
 
 const char *mqttBroker = "192.168.1.3";
 char stateText[20] = "None";
 unsigned long lastMqttReconnect = 0;
+bool adxlReady = false;
+bool hrReady = false;
+int sensorHRValue = 0;
 
 void mqttCallback(char *topic, byte *payload, unsigned int length) {
   String msg;
@@ -68,12 +75,31 @@ void setup() {
   Serial.println("Starting Fitness Watch...");
 
   Wire.begin(SDA_PIN, SCL_PIN);
+  Wire.setClock(400000);
 
   if (!display.begin(0x3C, true)) {
     Serial.println("SH1106 allocation failed!");
     for (;;);
   }
   Serial.println("Display initialized");
+
+  Serial.print("Initializing ADXL345...");
+  if (adxl.begin()) {
+    adxl.setRange(ADXL345_RANGE_16_G);
+    adxlReady = true;
+    Serial.println(" ready");
+  } else {
+    Serial.println(" failed");
+  }
+
+  Serial.print("Initializing MAX30102...");
+  if (MAX30102.begin()) {
+    MAX30102.sensorConfiguration(0x1F, SAMPLEAVG_4, MODE_RED_IR, SAMPLERATE_400, PULSEWIDTH_411, ADCRANGE_4096);
+    hrReady = true;
+    Serial.println(" ready");
+  } else {
+    Serial.println(" failed");
+  }
 
   Serial.printf("Connecting to WiFi %s ", WIFI_SSID);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -104,6 +130,7 @@ void loop() {
   static int pulseRate = random(60, 101);
   static unsigned long lastStepUpdate = 0;
   static unsigned long lastMqttTest = 0;
+  static int16_t ax = 0, ay = 0, az = 0;
 
   if (!mqttClient.connected() && millis() - lastMqttReconnect > 5000) {
     tryReconnectMQTT();
@@ -129,8 +156,37 @@ void loop() {
     lastMqttTest = millis();
   }
 
+  if (hrReady) {
+    int32_t spo2 = 0;
+    int8_t spo2Valid = 0;
+    int32_t heartRate = 0;
+    int8_t heartRateValid = 0;
+    MAX30102.heartrateAndOxygenSaturation(&spo2, &spo2Valid, &heartRate, &heartRateValid);
+    if (heartRateValid) {
+      sensorHRValue = (int)heartRate;
+    }
+  }
+
+  if (adxlReady) {
+    sensors_event_t event;
+    adxl.getEvent(&event);
+    ax = (int16_t)(event.acceleration.x);
+    ay = (int16_t)(event.acceleration.y);
+    az = (int16_t)(event.acceleration.z);
+  }
+
   char timeBuf[12];
   getTimeString(timeBuf, sizeof(timeBuf));
+
+  char stepsLine[28];
+  snprintf(stepsLine, sizeof(stepsLine), "Steps %lu|%d %d %d", steps, ax, ay, az);
+
+  char pulseLine[26];
+  if (hrReady && sensorHRValue > 0) {
+    snprintf(pulseLine, sizeof(pulseLine), "Pulse %d BPM| %dbpm", pulseRate, sensorHRValue);
+  } else {
+    snprintf(pulseLine, sizeof(pulseLine), "Pulse %d BPM| --bpm", pulseRate);
+  }
 
   display.clearDisplay();
   display.setTextSize(1);
@@ -141,13 +197,10 @@ void loop() {
   display.drawFastHLine(0, 10, SCREEN_WIDTH, SH110X_WHITE);
 
   display.setCursor(0, 14);
-  display.print("Steps ");
-  display.println(steps);
+  display.println(stepsLine);
 
   display.setCursor(0, 24);
-  display.print("Pulse ");
-  display.print(pulseRate);
-  display.println(" BPM");
+  display.println(pulseLine);
 
   display.setCursor(0, 34);
   display.print("State ");
