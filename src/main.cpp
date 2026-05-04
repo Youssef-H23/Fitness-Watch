@@ -6,7 +6,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
 #include <Adafruit_ADXL345_U.h>
-#include "DFRobot_MAX30102.h"
+#include "DFRobot_BloodOxygen_S.h"
 #include "secrets.h"
 
 #define SCREEN_WIDTH 128
@@ -16,7 +16,7 @@
 
 Adafruit_SH1106G display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 Adafruit_ADXL345_Unified adxl = Adafruit_ADXL345_Unified(12345);
-DFRobot_MAX30102 MAX30102;
+DFRobot_BloodOxygen_S_I2C bloodOxygen(&Wire, 0x57);
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
 
@@ -70,12 +70,35 @@ void getTimeString(char *buf, size_t len) {
   snprintf(buf, len, "%d:%02d %s", hours, minutes, ampm);
 }
 
+void scanI2C() {
+  Serial.println("Scanning I2C bus:");
+  int count = 0;
+  for (byte addr = 1; addr < 127; addr++) {
+    Wire.beginTransmission(addr);
+    byte error = Wire.endTransmission();
+    if (error == 0) {
+      Serial.printf("  Device found at 0x%02X\n", addr);
+      count++;
+    }
+  }
+  if (count == 0) {
+    Serial.println("  No I2C devices found!");
+  } else {
+    Serial.printf("  Found %d device(s)\n", count);
+  }
+}
+
 void setup() {
   Serial.begin(115200);
+  delay(2000);
   Serial.println("Starting Fitness Watch...");
 
   Wire.begin(SDA_PIN, SCL_PIN);
-  Wire.setClock(400000);
+
+  scanI2C();
+
+  Serial.print("Setting I2C to 100kHz for sensors...");
+  Wire.setClock(100000);
 
   if (!display.begin(0x3C, true)) {
     Serial.println("SH1106 allocation failed!");
@@ -92,9 +115,9 @@ void setup() {
     Serial.println(" failed");
   }
 
-  Serial.print("Initializing MAX30102...");
-  if (MAX30102.begin()) {
-    MAX30102.sensorConfiguration(0x1F, SAMPLEAVG_4, MODE_RED_IR, SAMPLERATE_400, PULSEWIDTH_411, ADCRANGE_4096);
+  Serial.print("Initializing DFRobot BloodOxygen (SEN0344)...");
+  if (bloodOxygen.begin()) {
+    bloodOxygen.sensorStartCollect();
     hrReady = true;
     Serial.println(" ready");
   } else {
@@ -122,6 +145,8 @@ void setup() {
   mqttClient.setServer(mqttBroker, 1883);
   mqttClient.setCallback(mqttCallback);
   tryReconnectMQTT();
+
+  Serial.println("Setup complete.");
 }
 
 void loop() {
@@ -130,6 +155,7 @@ void loop() {
   static int pulseRate = random(60, 101);
   static unsigned long lastStepUpdate = 0;
   static unsigned long lastMqttTest = 0;
+  static unsigned long lastSensorDebug = 0;
   static int16_t ax = 0, ay = 0, az = 0;
 
   if (!mqttClient.connected() && millis() - lastMqttReconnect > 5000) {
@@ -156,23 +182,24 @@ void loop() {
     lastMqttTest = millis();
   }
 
-  if (hrReady) {
-    int32_t spo2 = 0;
-    int8_t spo2Valid = 0;
-    int32_t heartRate = 0;
-    int8_t heartRateValid = 0;
-    MAX30102.heartrateAndOxygenSaturation(&spo2, &spo2Valid, &heartRate, &heartRateValid);
-    if (heartRateValid) {
-      sensorHRValue = (int)heartRate;
-    }
-  }
-
   if (adxlReady) {
     sensors_event_t event;
     adxl.getEvent(&event);
     ax = (int16_t)(event.acceleration.x);
     ay = (int16_t)(event.acceleration.y);
     az = (int16_t)(event.acceleration.z);
+  }
+
+  if (hrReady && millis() - lastSensorDebug > 4000) {
+    bloodOxygen.getHeartbeatSPO2();
+    int hr = bloodOxygen._sHeartbeatSPO2.Heartbeat;
+    int spo2 = bloodOxygen._sHeartbeatSPO2.SPO2;
+    Serial.printf("BloodOxygen - HR: %d bpm, SpO2: %d%%\n", hr, spo2);
+
+    if (hr > 0 && hr < 250) {
+      sensorHRValue = hr;
+    }
+    lastSensorDebug = millis();
   }
 
   char timeBuf[12];
