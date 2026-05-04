@@ -17,6 +17,7 @@ PubSubClient mqttClient(espClient);
 
 const char *mqttBroker = "192.168.1.3";
 char stateText[20] = "None";
+unsigned long lastMqttReconnect = 0;
 
 void mqttCallback(char *topic, byte *payload, unsigned int length) {
   String msg;
@@ -28,16 +29,14 @@ void mqttCallback(char *topic, byte *payload, unsigned int length) {
   stateText[sizeof(stateText) - 1] = '\0';
 }
 
-void reconnectMQTT() {
-  while (!mqttClient.connected()) {
-    Serial.print("Connecting to MQTT...");
-    if (mqttClient.connect("ESP32-Fitness-Watch")) {
-      Serial.println(" connected");
-      mqttClient.subscribe("control/state");
-    } else {
-      Serial.printf(" failed, rc=%d retry in 5s\n", mqttClient.state());
-      delay(5000);
-    }
+void tryReconnectMQTT() {
+  if (mqttClient.connected()) return;
+  Serial.print("Connecting to MQTT...");
+  if (mqttClient.connect("ESP32-Fitness-Watch")) {
+    Serial.println(" connected");
+    mqttClient.subscribe("control/state");
+  } else {
+    Serial.printf(" failed, rc=%d\n", mqttClient.state());
   }
 }
 
@@ -72,7 +71,7 @@ void setup() {
 
   mqttClient.setServer(mqttBroker, 1883);
   mqttClient.setCallback(mqttCallback);
-  reconnectMQTT();
+  tryReconnectMQTT();
 }
 
 void loop() {
@@ -82,8 +81,9 @@ void loop() {
   static unsigned long lastStepUpdate = 0;
   static unsigned long lastMqttTest = 0;
 
-  if (!mqttClient.connected()) {
-    reconnectMQTT();
+  if (!mqttClient.connected() && millis() - lastMqttReconnect > 5000) {
+    tryReconnectMQTT();
+    lastMqttReconnect = millis();
   }
   mqttClient.loop();
 
@@ -97,7 +97,7 @@ void loop() {
     lastStepUpdate = millis();
   }
 
-  if (millis() - lastMqttTest > 5000) {
+  if (mqttClient.connected() && millis() - lastMqttTest > 5000) {
     char payload[20];
     snprintf(payload, sizeof(payload), "%lu", random(0, 99999));
     mqttClient.publish("test/whatever", payload);
