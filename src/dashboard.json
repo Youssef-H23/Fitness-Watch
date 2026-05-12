@@ -20,12 +20,13 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 220,
+        "x": 240,
         "y": 220,
         "wires": [
             [
                 "af1384c5e83048c2",
-                "b3211933f2296e3f"
+                "b3211933f2296e3f",
+                "b58da206117db06b"
             ]
         ]
     },
@@ -42,11 +43,12 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 230,
+        "x": 310,
         "y": 360,
         "wires": [
             [
-                "f3825e4bc98bec54"
+                "f3825e4bc98bec54",
+                "b58da206117db06b"
             ]
         ]
     },
@@ -56,7 +58,7 @@
         "z": "ca447f58e3bfd497",
         "group": "f81a482830b8ac9d",
         "name": "HR templete",
-        "order": 1,
+        "order": 2,
         "width": 0,
         "height": 0,
         "format": "<div style=\"\ndisplay:flex;\njustify-content:center;\nalign-items:center;\nheight:280px;\n\">\n\n<div class=\"heart-container\">\n\n    <div class=\"heart-icon\">💙</div>\n\n    <div class=\"heart-title\">Heart Rate</div>\n\n    <div class=\"heart-value\">\n        {{msg.payload || \"--\"}}\n    </div>\n\n    <div class=\"ecg-line\">\n        ──╲╱╲──\n    </div>\n\n    <div class=\"heart-bpm\">BPM</div>\n\n</div>\n\n</div>\n\n<style>\n.heart-container{\n    width:230px;\n    height:230px;\n    border-radius:50%;\n    \n    background: radial-gradient(circle at center,\n    #001a4d 20%,\n    #002b80 60%,\n    #003cff 100%);\n    \n    display:flex;\n    flex-direction:column;\n    justify-content:center;\n    align-items:center;\n    \n    color:white;\n    position:relative;\n\n    border:8px solid #35e0ff;\n\n    box-shadow:\n    0 0 20px rgba(53,224,255,0.35),\n    0 0 40px rgba(53,224,255,0.2);\n\n    animation: softPulse 2s infinite ease-in-out;\n}\n\n.heart-container::before{\n    content:\"\";\n    position:absolute;\n    width:250px;\n    height:250px;\n    border-radius:50%;\n    border:4px solid rgba(53,224,255,0.4);\n}\n\n.heart-icon{\n    font-size:30px;\n    margin-bottom:8px;\n}\n\n.heart-title{\n    font-size:20px;\n    font-weight:500;\n    margin-bottom:10px;\n}\n\n.heart-value{\n    font-size:60px;\n    font-weight:bold;\n    line-height:1;\n}\n\n.ecg-line{\n    font-size:22px;\n    color:#35e0ff;\n    margin-top:10px;\n}\n\n.heart-bpm{\n    font-size:18px;\n    color:#7ee8ff;\n    margin-top:5px;\n}\n\n@keyframes softPulse{\n    0%{\n        transform:scale(1);\n    }\n\n    50%{\n        transform:scale(1.03);\n    }\n\n    100%{\n        transform:scale(1);\n    }\n}\n</style>",
@@ -65,8 +67,8 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 510,
-        "y": 220,
+        "x": 590,
+        "y": 200,
         "wires": [
             []
         ]
@@ -77,7 +79,7 @@
         "z": "ca447f58e3bfd497",
         "group": "f81a482830b8ac9d",
         "name": "HR chart templete",
-        "order": 2,
+        "order": 3,
         "width": 0,
         "height": 0,
         "format": "<div style=\"\nbackground:#f8fafc;\npadding:10px;\nborder-radius:20px;\nwidth:100%;\nheight:320px;\noverflow:hidden;\ndisplay:flex;\nflex-direction:column;\nalign-items:center;\ngap:8px;\n\">\n\n<div style=\"display:flex;justify-content:space-between;align-items:center;width:100%;padding:0 10px;box-sizing:border-box\">\n  <div>\n    <span id=\"bpmNum\" style=\"font-size:40px;font-weight:600;color:#1e293b;line-height:1\">--</span>\n    <span style=\"font-size:13px;color:#94a3b8;margin-left:4px\">BPM</span>\n  </div>\n  <div style=\"text-align:right\">\n    <div style=\"display:flex;align-items:center;gap:5px;justify-content:flex-end\">\n      <div id=\"liveDot\" style=\"width:7px;height:7px;border-radius:50%;background:#94a3b8\"></div>\n      <span id=\"liveStatus\" style=\"font-size:12px;color:#64748b\">Waiting...</span>\n    </div>\n    <div style=\"font-size:11px;color:#94a3b8;font-family:monospace\">α = <span id=\"alphaVal\">--</span></div>\n  </div>\n</div>\n\n<canvas id=\"heartCanvas\" width=\"420\" height=\"200\"></canvas>\n\n<div style=\"display:grid;grid-template-columns:1fr 1fr 1fr;width:100%;border-top:1px solid #e2e8f0\">\n  <div style=\"padding:6px;text-align:center;border-right:1px solid #e2e8f0\">\n    <div style=\"font-size:10px;color:#94a3b8;text-transform:uppercase\">Zone</div>\n    <div id=\"zoneVal\" style=\"font-size:13px;font-weight:600;color:#1e293b\">—</div>\n  </div>\n  <div style=\"padding:6px;text-align:center;border-right:1px solid #e2e8f0\">\n    <div style=\"font-size:10px;color:#94a3b8;text-transform:uppercase\">R-R</div>\n    <div id=\"rrVal\" style=\"font-size:13px;font-weight:600;color:#1e293b\">— ms</div>\n  </div>\n  <div style=\"padding:6px;text-align:center\">\n    <div style=\"font-size:10px;color:#94a3b8;text-transform:uppercase\">Intensity</div>\n    <div id=\"intensityVal\" style=\"font-size:13px;font-weight:600;color:#1e293b\">—</div>\n  </div>\n</div>\n\n</div>\n\n<script>\n(function(scope){\n\nconst canvas = document.getElementById('heartCanvas');\nconst ctx    = canvas.getContext('2d');\nconst W = 420, H = 200;\nconst cx = W/2, cy = H * 0.56;\nconst scX = W * 0.125, scY = H * 0.155;\n\nlet heartRate  = 0;\nlet alpha      = 0;\nlet pulsePhase = 0;\nlet lastBeat   = 0;\n\nfunction bpmToAlpha(bpm){\n  return 4 + (bpm - 40) * (30 - 4) / (180 - 40);\n}\n\nfunction updateMeta(bpm){\n  heartRate = bpm;\n  document.getElementById('bpmNum').textContent = bpm > 0 ? bpm : '--';\n  document.getElementById('rrVal').textContent  = bpm > 0 ? Math.round(60000/bpm)+' ms' : '— ms';\n\n  let zone, intensity, dotColor, status;\n  if(bpm <= 0){\n    zone='—'; intensity='—'; dotColor='#94a3b8'; status='Waiting...';\n  } else if(bpm < 60){\n    zone='Rest'; intensity='Low'; dotColor='#3b82f6'; status='Bradycardia';\n  } else if(bpm < 100){\n    zone='Resting'; intensity='Normal'; dotColor='#22c55e'; status='Normal';\n  } else if(bpm < 140){\n    zone='Cardio'; intensity='High'; dotColor='#f59e0b'; status='Elevated';\n  } else {\n    zone='Peak'; intensity='Max'; dotColor='#ef4444'; status='Tachycardia';\n  }\n\n  document.getElementById('zoneVal').textContent      = zone;\n  document.getElementById('intensityVal').textContent = intensity;\n  document.getElementById('liveStatus').textContent   = status;\n  document.getElementById('liveDot').style.background = dotColor;\n}\n\nfunction animate(ts){\n  if(heartRate > 0){\n    const period = 60000 / heartRate;\n    if(!lastBeat) lastBeat = ts;\n    pulsePhase = ((ts - lastBeat) % period) / period;\n  }\n\n  const baseAlpha = heartRate > 0 ? bpmToAlpha(heartRate) : 8;\n  const envelope  = Math.pow(Math.sin(pulsePhase * Math.PI), 1.5);\n  const target    = baseAlpha * (0.6 + 0.4 * envelope);\n  alpha          += (target - alpha) * 0.12;\n\n  const scaleEnv = 1 + 0.06 * Math.pow(Math.sin(pulsePhase * Math.PI), 2);\n\n  const t = heartRate > 0 ? Math.min(1,(heartRate-40)/140) : 0;\n  const r = Math.round(210 + t*45);\n  const g = Math.round(80  - t*60);\n  const b = Math.round(100 - t*70);\n\n  ctx.clearRect(0,0,W,H);\n\n  // Grid\n  ctx.strokeStyle='rgba(150,150,150,0.12)';\n  ctx.lineWidth=0.5;\n  for(let x=0;x<W;x+=28){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}\n  for(let y=0;y<H;y+=28){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}\n  ctx.strokeStyle='rgba(150,150,150,0.25)';\n  ctx.lineWidth=1;\n  ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.stroke();\n  ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,H);ctx.stroke();\n\n  // Heart\n  ctx.beginPath();\n  for(let x=-1.82;x<=1.82;x+=0.007){\n    const y = Math.pow(Math.abs(x),2/3)\n             + 0.9*Math.sqrt(Math.max(0,3.3-x*x))\n             * Math.sin(alpha*Math.PI*x);\n    const px = cx + x*scX*scaleEnv;\n    const py = cy - y*scY*scaleEnv;\n    if(x<=-1.815) ctx.moveTo(px,py);\n    else          ctx.lineTo(px,py);\n  }\n  ctx.strokeStyle=`rgb(${r},${g},${b})`;\n  ctx.lineWidth=2;\n  ctx.lineJoin='round';\n  ctx.stroke();\nctx.fillText(\"Time (s)\",340,115);\nctx.fillText(\"Pulse Intensity\",220,20);\n  // Glow on beat peak\n  if(envelope > 0.6){\n    ctx.save();\n    ctx.globalAlpha=(envelope-0.6)*0.2;\n    ctx.lineWidth=6;\n    ctx.stroke();\n    ctx.restore();\n  }\n\n  document.getElementById('alphaVal').textContent = alpha.toFixed(1);\n  requestAnimationFrame(animate);\n}\nrequestAnimationFrame(animate);\n\n// ✅ هنا بيجي الـ BPM من الـ MQTT\nscope.$watch('msg', function(msg){\n  if(msg && msg.payload !== undefined){\n    var bpm = parseInt(msg.payload);\n    if(bpm > 0 && bpm < 250){\n      updateMeta(bpm);\n    } else {\n      updateMeta(0);\n    }\n  }\n});\n\n})(scope);\n</script>",
@@ -86,8 +88,8 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 550,
-        "y": 280,
+        "x": 610,
+        "y": 260,
         "wires": [
             []
         ]
@@ -98,7 +100,7 @@
         "z": "ca447f58e3bfd497",
         "group": "f81a482830b8ac9d",
         "name": "SpO₂",
-        "order": 3,
+        "order": 4,
         "width": 0,
         "height": 0,
         "format": "<div style=\"\ndisplay:flex;\njustify-content:center;\nalign-items:center;\nheight:280px;\n\">\n\n    <div class=\"spo2-container\">\n\n        <div class=\"spo2-icon\">🫁</div>\n\n        <div class=\"spo2-title\">Blood Oxygen</div>\n\n        <div class=\"spo2-value\">\n            {{msg.payload || \"--\"}}\n        </div>\n\n        <div class=\"spo2-unit\">SpO₂ %</div>\n\n    </div>\n\n</div>\n\n<style>\n    .spo2-container {\n        width: 220px;\n        height: 220px;\n        border-radius: 50%;\n\n        background: radial-gradient(circle,\n                #003b5c 20%,\n                #0077b6 60%,\n                #00b4d8 100%);\n\n        display: flex;\n        flex-direction: column;\n        justify-content: center;\n        align-items: center;\n\n        color: white;\n\n        border: 8px solid #90e0ef;\n\n        box-shadow:\n            0 0 20px rgba(144, 224, 239, 0.4);\n\n        animation: breathe 3s infinite ease-in-out;\n    }\n\n    .spo2-icon {\n        font-size: 28px;\n        margin-bottom: 8px;\n    }\n\n    .spo2-title {\n        font-size: 20px;\n        margin-bottom: 10px;\n    }\n\n    .spo2-value {\n        font-size: 55px;\n        font-weight: bold;\n    }\n\n    .spo2-unit {\n        font-size: 18px;\n        color: #caf0f8;\n    }\n\n    @keyframes breathe {\n        0% {\n            transform: scale(1);\n        }\n\n        50% {\n            transform: scale(1.03);\n        }\n\n        100% {\n            transform: scale(1);\n        }\n    }\n</style>",
@@ -107,7 +109,7 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 490,
+        "x": 650,
         "y": 360,
         "wires": [
             []
@@ -126,8 +128,8 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 250,
-        "y": 600,
+        "x": 230,
+        "y": 540,
         "wires": [
             [
                 "b6c1675a65394ac7",
@@ -141,7 +143,7 @@
         "z": "ca447f58e3bfd497",
         "group": "f81a482830b8ac9d",
         "name": "Steps",
-        "order": 4,
+        "order": 5,
         "width": 0,
         "height": 0,
         "format": "<div style=\"\ndisplay:flex;\njustify-content:center;\nalign-items:center;\nheight:260px;\n\">\n\n<div class=\"steps-container\">\n\n    <div class=\"steps-icon\">👟</div>\n\n    <div class=\"steps-title\">Daily Steps</div>\n\n    <div class=\"steps-value\">\n        {{msg.payload || \"0\"}}\n    </div>\n\n    <div class=\"steps-unit\">Steps</div>\n\n</div>\n\n</div>\n\n<style>\n.steps-container{\n    width:220px;\n    height:220px;\n    border-radius:50%;\n\n    background: radial-gradient(circle,\n    #064e3b 20%,\n    #059669 60%,\n    #10b981 100%);\n\n    display:flex;\n    flex-direction:column;\n    justify-content:center;\n    align-items:center;\n\n    color:white;\n\n    border:8px solid #6ee7b7;\n\n    box-shadow:\n    0 0 20px rgba(16,185,129,0.4);\n}\n\n.steps-icon{\n    font-size:28px;\n}\n\n.steps-title{\n    font-size:20px;\n    margin:8px 0;\n}\n\n.steps-value{\n    font-size:55px;\n    font-weight:bold;\n}\n\n.steps-unit{\n    font-size:18px;\n}\n</style>",
@@ -150,8 +152,8 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 630,
-        "y": 580,
+        "x": 690,
+        "y": 520,
         "wires": [
             []
         ]
@@ -162,7 +164,7 @@
         "z": "ca447f58e3bfd497",
         "name": "",
         "group": "f81a482830b8ac9d",
-        "order": 5,
+        "order": 6,
         "width": 0,
         "height": 0,
         "label": "Motion Magnitude",
@@ -194,7 +196,7 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 530,
+        "x": 690,
         "y": 420,
         "wires": [
             []
@@ -213,11 +215,11 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 210,
-        "y": 440,
+        "x": 230,
+        "y": 420,
         "wires": [
             [
-                "ceef1fcea926cc05"
+                "cc893335afb10e2b"
             ]
         ]
     },
@@ -234,8 +236,8 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 250,
-        "y": 520,
+        "x": 230,
+        "y": 480,
         "wires": [
             [
                 "12462bd72e1c1abe",
@@ -249,7 +251,7 @@
         "z": "ca447f58e3bfd497",
         "group": "f81a482830b8ac9d",
         "name": "Current Activity",
-        "order": 6,
+        "order": 7,
         "width": 0,
         "height": 0,
         "format": "<div style=\"\ndisplay:flex;\njustify-content:center;\nalign-items:center;\nheight:260px;\n\">\n\n<div id=\"stateCard\" class=\"state-container\">\n\n    <div id=\"stateIcon\" class=\"state-icon\">🧍</div>\n\n    <div class=\"state-title\">\n        Current Activity\n    </div>\n\n    <div id=\"stateValue\" class=\"state-value\">\n        {{msg.payload || \"Idle\"}}\n    </div>\n\n</div>\n\n</div>\n\n<script>\n(function(scope){\n\nscope.$watch('msg', function(msg){\n\n    if(!msg || !msg.payload) return;\n\n    let state = msg.payload.toLowerCase();\n\n    let icon = \"🧍\";\n    let color1 = \"#475569\";\n    let color2 = \"#64748b\";\n\n    if(state.includes(\"walking\")){\n        icon=\"🚶\";\n        color1=\"#0f766e\";\n        color2=\"#14b8a6\";\n    }\n\n    else if(state.includes(\"running\")){\n        icon=\"🏃\";\n        color1=\"#b45309\";\n        color2=\"#f97316\";\n    }\n\n    else if(state.includes(\"sleep\")){\n        icon=\"😴\";\n        color1=\"#1e3a8a\";\n        color2=\"#3b82f6\";\n    }\n\n    else if(state.includes(\"idle\")){\n        icon=\"🧍\";\n        color1=\"#374151\";\n        color2=\"#6b7280\";\n    }\n\n    document.getElementById(\"stateIcon\").innerHTML = icon;\n\n    document.getElementById(\"stateCard\").style.background =\n    `linear-gradient(135deg, ${color1}, ${color2})`;\n\n});\n\n})(scope);\n</script>\n\n<style>\n.state-container{\n    width:220px;\n    height:220px;\n    border-radius:25px;\n    background:linear-gradient(135deg,#374151,#6b7280);\n\n    display:flex;\n    flex-direction:column;\n    justify-content:center;\n    align-items:center;\n\n    color:white;\n\n    box-shadow:0px 0px 20px rgba(0,0,0,0.2);\n}\n\n.state-icon{\n    font-size:40px;\n}\n\n.state-title{\n    font-size:20px;\n    margin:10px 0;\n}\n\n.state-value{\n    font-size:28px;\n    font-weight:bold;\n}\n</style>",
@@ -258,8 +260,8 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 600,
-        "y": 500,
+        "x": 720,
+        "y": 480,
         "wires": [
             []
         ]
@@ -269,7 +271,7 @@
         "type": "function",
         "z": "ca447f58e3bfd497",
         "name": "function 2",
-        "func": "let steps = flow.get(\"steps\") || 0;\nlet weight = flow.get(\"weight\") || 70;\nlet state = flow.get(\"state\") || \"idle\";\nlet totalCalories = flow.get(\"totalCalories\") || 0;\n\nif (msg.topic === \"signals/steps\") {\n    steps = Number(msg.payload);\n    flow.set(\"steps\", steps);\n}\n\nif (msg.topic === \"weight\") {\n    let enteredWeight = Number(msg.payload);\n\n    if (!isNaN(enteredWeight) && enteredWeight > 20 && enteredWeight < 300) {\n        weight = enteredWeight;\n        flow.set(\"weight\", weight);\n    }\n}\n\nif (msg.topic === \"control/state\") {\n    state = msg.payload.toLowerCase();\n    flow.set(\"state\", state);\n}\n\nif (msg.topic === \"reset\") {\n    totalCalories = 0;\n    steps = 0;\n\n    flow.set(\"totalCalories\", 0);\n    flow.set(\"steps\", 0);\n    flow.set(\"previousSteps\", 0);\n\n    msg.payload = \"0.00\";\n    return msg;\n}\n\nif (msg.topic === \"timer\") {\n    let calories = 0;\n\n    // Active states → based on steps\n    if (state.includes(\"walking\")) {\n        calories = steps * weight * 0.0005;\n    }\n    else if (state.includes(\"running\")) {\n        calories = steps * weight * 0.0010;\n    }\n\n    // Resting states → based on time + weight\n    else if (state.includes(\"idle\")) {\n        calories = totalCalories + (weight * 0.00005);\n    }\n\n    else if (state.includes(\"sleep\")) {\n        calories = totalCalories + (weight * 0.0001);\n    }\n\n    totalCalories = calories;\n}\nflow.set(\"totalCalories\", totalCalories);\n\nmsg.payload = totalCalories.toFixed(2);\n\nreturn msg;",
+        "func": "let steps = flow.get(\"steps\") || 0;\nlet weight = flow.get(\"weight\") || 70;\nlet state = flow.get(\"state\") || \"idle\";\nlet totalCalories = flow.get(\"totalCalories\") || 0;\n\nif (msg.topic === \"signals/steps\") {\n    steps = Number(msg.payload);\n    flow.set(\"steps\", steps);\n}\n\nif (msg.topic === \"weight\") {\n    let enteredWeight = Number(msg.payload);\n\n    if (!isNaN(enteredWeight) && enteredWeight > 20 && enteredWeight < 300) {\n        weight = enteredWeight;\n        flow.set(\"weight\", weight);\n    }\n}\n\nif (msg.topic === \"control/state\") {\n    state = msg.payload.toLowerCase();\n    flow.set(\"state\", state);\n}\n\nif (msg.topic === \"reset\") {\n    totalCalories = 0;\n    steps = 0;\n\n    flow.set(\"totalCalories\", 0);\n    flow.set(\"steps\", 0);\n    flow.set(\"previousSteps\", 0);\n\n    msg.payload = \"0.00\";\n    return msg;\n}\n\nif (msg.topic === \"timer\") {\n\n    let caloriesAdded = 0;\n    let previousSteps = flow.get(\"previousSteps\") || 0;\n\n    let newSteps = steps - previousSteps;\n\n    if (newSteps < 0) {\n        newSteps = 0;\n    }\n\n    // Active states\n    if (state.includes(\"walking\")) {\n        caloriesAdded = newSteps * weight * 0.0005;\n    }\n    else if (state.includes(\"running\")) {\n        caloriesAdded = newSteps * weight * 0.0010;\n    }\n\n    // Resting states\n    else if (state.includes(\"idle\")) {\n        caloriesAdded = weight * 0.00005;\n    }\n    else if (state.includes(\"sleep\")) {\n        caloriesAdded = weight * 0.00003;\n    }\n\n    totalCalories += caloriesAdded;\n\n    flow.set(\"previousSteps\", steps);\n}\nflow.set(\"totalCalories\", totalCalories);\n\nmsg.payload = totalCalories.toFixed(2);\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -277,7 +279,7 @@
         "finalize": "",
         "libs": [],
         "x": 600,
-        "y": 680,
+        "y": 580,
         "wires": [
             [
                 "8f095b219f5120e4"
@@ -290,7 +292,7 @@
         "z": "ca447f58e3bfd497",
         "group": "f81a482830b8ac9d",
         "name": "Calories widget",
-        "order": 8,
+        "order": 9,
         "width": 0,
         "height": 0,
         "format": "<div style=\"\ndisplay:flex;\njustify-content:center;\nalign-items:center;\nheight:260px;\n\">\n\n<div class=\"cal-container\">\n\n    <div class=\"cal-icon\">🔥</div>\n\n    <div class=\"cal-title\">\n        Calories Burned\n    </div>\n\n    <div class=\"cal-value\">\n        {{msg.payload || \"0\"}}\n    </div>\n\n    <div class=\"cal-unit\">\n        kcal\n    </div>\n\n</div>\n\n</div>\n\n<style>\n.cal-container{\n    width:220px;\n    height:220px;\n    border-radius:50%;\n\n    background: radial-gradient(circle,\n    #7c2d12 20%,\n    #ea580c 60%,\n    #fb923c 100%);\n\n    color:white;\n\n    display:flex;\n    flex-direction:column;\n    justify-content:center;\n    align-items:center;\n\n    border:8px solid #fdba74;\n\n    box-shadow:0 0 20px rgba(251,146,60,0.4);\n}\n\n.cal-icon{\n    font-size:30px;\n}\n\n.cal-title{\n    font-size:18px;\n    margin:10px 0;\n}\n\n.cal-value{\n    font-size:50px;\n    font-weight:bold;\n}\n\n.cal-unit{\n    font-size:18px;\n}\n</style>",
@@ -299,8 +301,8 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 820,
-        "y": 680,
+        "x": 780,
+        "y": 580,
         "wires": [
             []
         ]
@@ -313,7 +315,7 @@
         "label": "Enter Weight (kg)",
         "tooltip": "",
         "group": "f81a482830b8ac9d",
-        "order": 7,
+        "order": 8,
         "width": 0,
         "height": 0,
         "passthru": true,
@@ -323,8 +325,8 @@
         "sendOnBlur": true,
         "className": "",
         "topicType": "str",
-        "x": 310,
-        "y": 700,
+        "x": 250,
+        "y": 620,
         "wires": [
             [
                 "a01411c8599eac42"
@@ -352,8 +354,8 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "timer",
-        "x": 330,
-        "y": 760,
+        "x": 270,
+        "y": 680,
         "wires": [
             [
                 "a01411c8599eac42"
@@ -366,7 +368,7 @@
         "z": "ca447f58e3bfd497",
         "name": "",
         "group": "f81a482830b8ac9d",
-        "order": 8,
+        "order": 10,
         "width": 0,
         "height": 0,
         "passthru": false,
@@ -380,12 +382,73 @@
         "payloadType": "str",
         "topic": "reset",
         "topicType": "str",
-        "x": 320,
-        "y": 820,
+        "x": 460,
+        "y": 680,
         "wires": [
             [
                 "a01411c8599eac42"
             ]
+        ]
+    },
+    {
+        "id": "cc893335afb10e2b",
+        "type": "function",
+        "z": "ca447f58e3bfd497",
+        "name": "function 8",
+        "func": "let rawMag = Number(msg.payload);\n\n// تقريب لجذر القيمة\nlet correctedMag = Math.sqrt(rawMag);\n\n// إزالة baseline الجاذبية التقريبية\ncorrectedMag = correctedMag - 9.8;\n\n// منع القيم السالبة\nif (correctedMag < 0) {\n    correctedMag = 0;\n}\n\nmsg.payload = correctedMag.toFixed(2);\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 420,
+        "wires": [
+            [
+                "ceef1fcea926cc05"
+            ]
+        ]
+    },
+    {
+        "id": "b58da206117db06b",
+        "type": "function",
+        "z": "ca447f58e3bfd497",
+        "name": "function 3",
+        "func": "let hr = flow.get(\"hr\") || 70;\nlet spo2 = flow.get(\"spo2\") || 98;\n\nif (msg.topic === \"signals/hr\") {\n    hr = Number(msg.payload);\n    flow.set(\"hr\", hr);\n}\n\nif (msg.topic === \"signals/spo2\") {\n    spo2 = Number(msg.payload);\n    flow.set(\"spo2\", spo2);\n}\n\nlet status = {\n    state: \"Normal\"\n};\n\nif (hr > 100 || spo2 < 95) {\n    status = {\n        state: \"Warning\",\n        color1: \"#d97706\",\n        color2: \"#f59e0b\",\n        icon: \"⚠\",\n        message: \"Warning: Check your health metrics\"\n    };\n}\n\nif (hr > 120 || spo2 < 90) {\n    status = {\n        state: \"Critical\",\n        color1: \"#dc2626\",\n        color2: \"#ef4444\",\n        icon: \"🚨\",\n        message: \"Critical Condition Detected!\"\n    };\n}\n\nmsg.payload = status;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 540,
+        "y": 320,
+        "wires": [
+            [
+                "65be46af14730e17"
+            ]
+        ]
+    },
+    {
+        "id": "65be46af14730e17",
+        "type": "ui_template",
+        "z": "ca447f58e3bfd497",
+        "group": "f81a482830b8ac9d",
+        "name": "Emergency Alert",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<div id=\"alertBox\" style=\"\ndisplay:none;\npadding:18px;\nborder-radius:15px;\ncolor:white;\nfont-weight:bold;\ntext-align:center;\nmargin:10px;\nfont-size:20px;\nmin-height:60px;\nwidth:90%;\nbox-sizing:border-box;\nline-height:1.4;\nword-wrap:break-word;\n\">\n</div>\n\n<script>\n(function(scope){\n\nscope.$watch('msg', function(msg){\n\n    if(!msg || !msg.payload) return;\n\n    let box = document.getElementById(\"alertBox\");\n    let data = msg.payload;\n\n    if(data.state === \"Normal\"){\n        box.style.display = \"none\";\n        return;\n    }\n\n    box.style.display = \"block\";\n\n    box.style.background =\n    `linear-gradient(135deg, ${data.color1}, ${data.color2})`;\n\n    box.innerHTML =\n    `${data.icon} ${data.message}`;\n});\n\n})(scope);\n</script>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 740,
+        "y": 320,
+        "wires": [
+            []
         ]
     },
     {
@@ -439,7 +502,7 @@
         "hidden": false
     },
     {
-        "id": "c67cf04547aabead",
+        "id": "b963a30042ad6534",
         "type": "global-config",
         "env": [],
         "modules": {
