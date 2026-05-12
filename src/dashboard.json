@@ -25,8 +25,7 @@
         "wires": [
             [
                 "af1384c5e83048c2",
-                "b3211933f2296e3f",
-                "b58da206117db06b"
+                "b3211933f2296e3f"
             ]
         ]
     },
@@ -43,12 +42,11 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 310,
+        "x": 270,
         "y": 360,
         "wires": [
             [
-                "f3825e4bc98bec54",
-                "b58da206117db06b"
+                "f3825e4bc98bec54"
             ]
         ]
     },
@@ -415,7 +413,7 @@
         "type": "function",
         "z": "ca447f58e3bfd497",
         "name": "function 3",
-        "func": "let hr = flow.get(\"hr\") || 70;\nlet spo2 = flow.get(\"spo2\") || 98;\n\nif (msg.topic === \"signals/hr\") {\n    hr = Number(msg.payload);\n    flow.set(\"hr\", hr);\n}\n\nif (msg.topic === \"signals/spo2\") {\n    spo2 = Number(msg.payload);\n    flow.set(\"spo2\", spo2);\n}\n\nlet status = {\n    state: \"Normal\"\n};\n\nif (hr > 100 || spo2 < 95) {\n    status = {\n        state: \"Warning\",\n        color1: \"#d97706\",\n        color2: \"#f59e0b\",\n        icon: \"⚠\",\n        message: \"Warning: Check your health metrics\"\n    };\n}\n\nif (hr > 120 || spo2 < 90) {\n    status = {\n        state: \"Critical\",\n        color1: \"#dc2626\",\n        color2: \"#ef4444\",\n        icon: \"🚨\",\n        message: \"Critical Condition Detected!\"\n    };\n}\n\nmsg.payload = status;\nreturn msg;",
+        "func": "let hr = flow.get(\"hr\") || 70;\nlet spo2 = flow.get(\"spo2\") || 98;\n\nif (msg.topic === \"signals/hr\") {\n    hr = Number(msg.payload);\n    flow.set(\"hr\", hr);\n}\n\nif (msg.topic === \"signals/spo2\") {\n    spo2 = Number(msg.payload);\n    flow.set(\"spo2\", spo2);\n}\n\nlet status = {\n    state: \"Normal\"\n};\n\nif (hr > 100 || spo2 < 95) {\n    status = {\n        state: \"Warning\",\n        color1: \"#d97706\",\n        color2: \"#f59e0b\",\n        icon: \"⚠\",\n        message: \"Health Warning\"\n    };\n}\n\nif (hr > 120 || spo2 < 90) {\n    status = {\n        state: \"Critical\",\n        color1: \"#dc2626\",\n        color2: \"#ef4444\",\n        icon: \"🚨\",\n        message: \"Emergency Detected\"\n    };\n}\n\nmsg.payload = status;\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -439,7 +437,7 @@
         "order": 1,
         "width": 0,
         "height": 0,
-        "format": "<div id=\"alertBox\" style=\"\ndisplay:none;\npadding:18px;\nborder-radius:15px;\ncolor:white;\nfont-weight:bold;\ntext-align:center;\nmargin:10px;\nfont-size:20px;\nmin-height:60px;\nwidth:90%;\nbox-sizing:border-box;\nline-height:1.4;\nword-wrap:break-word;\n\">\n</div>\n\n<script>\n(function(scope){\n\nscope.$watch('msg', function(msg){\n\n    if(!msg || !msg.payload) return;\n\n    let box = document.getElementById(\"alertBox\");\n    let data = msg.payload;\n\n    if(data.state === \"Normal\"){\n        box.style.display = \"none\";\n        return;\n    }\n\n    box.style.display = \"block\";\n\n    box.style.background =\n    `linear-gradient(135deg, ${data.color1}, ${data.color2})`;\n\n    box.innerHTML =\n    `${data.icon} ${data.message}`;\n});\n\n})(scope);\n</script>",
+        "format": "<div id=\"alertBox\" style=\"\ndisplay:none;\npadding:18px;\nborder-radius:15px;\ncolor:white;\nfont-weight:bold;\ntext-align:center;\nmargin:10px;\nfont-size:20px;\nmin-height:60px;\nwidth:90%;\nbox-sizing:border-box;\nline-height:1.4;\nword-wrap:break-word;\n\">\n</div>\n\n<script>\n(function(scope){\n\nlet lastState = \"Normal\";\n\nfunction speakAlert(message){\n    let speech = new SpeechSynthesisUtterance(message);\n\n    speech.lang = \"en-US\";\n    speech.rate = 1;\n    speech.pitch = 1;\n    speech.volume = 1;\n\n    window.speechSynthesis.cancel();\n    window.speechSynthesis.speak(speech);\n}\n\nscope.$watch('msg', function(msg){\n\n    if(!msg || !msg.payload) return;\n\n    let box = document.getElementById(\"alertBox\");\n    let data = msg.payload;\n\n    if(data.state === \"Normal\"){\n        box.style.display = \"none\";\n        lastState = \"Normal\";\n        return;\n    }\n\n    box.style.display = \"block\";\n\n    box.style.background =\n    `linear-gradient(135deg, ${data.color1}, ${data.color2})`;\n\n    box.innerHTML =\n    `${data.icon} ${data.message}`;\n\n    // voice alert only when state changes\n    if(lastState !== data.state){\n\n        if(data.state === \"Warning\"){\n            speakAlert(\"Warning. Please check health metrics\");\n        }\n\n        if(data.state === \"Critical\"){\n            speakAlert(\"Emergency detected\");\n        }\n    }\n\n    lastState = data.state;\n\n});\n\n})(scope);\n</script>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": true,
@@ -449,6 +447,35 @@
         "y": 320,
         "wires": [
             []
+        ]
+    },
+    {
+        "id": "2ea2a7fcb8448c36",
+        "type": "inject",
+        "z": "ca447f58e3bfd497",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "signals/hr",
+        "payload": "130",
+        "payloadType": "num",
+        "x": 230,
+        "y": 300,
+        "wires": [
+            [
+                "b58da206117db06b"
+            ]
         ]
     },
     {
@@ -502,7 +529,7 @@
         "hidden": false
     },
     {
-        "id": "b963a30042ad6534",
+        "id": "af49c99a58cfecfb",
         "type": "global-config",
         "env": [],
         "modules": {
