@@ -25,7 +25,8 @@
         "wires": [
             [
                 "af1384c5e83048c2",
-                "b3211933f2296e3f"
+                "b3211933f2296e3f",
+                "b58da206117db06b"
             ]
         ]
     },
@@ -46,7 +47,8 @@
         "y": 360,
         "wires": [
             [
-                "f3825e4bc98bec54"
+                "f3825e4bc98bec54",
+                "b58da206117db06b"
             ]
         ]
     },
@@ -450,35 +452,6 @@
         ]
     },
     {
-        "id": "2ea2a7fcb8448c36",
-        "type": "inject",
-        "z": "ca447f58e3bfd497",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "signals/hr",
-        "payload": "130",
-        "payloadType": "num",
-        "x": 230,
-        "y": 300,
-        "wires": [
-            [
-                "b58da206117db06b"
-            ]
-        ]
-    },
-    {
         "id": "f7718aee67027a6e",
         "type": "mqtt-broker",
         "name": "",
@@ -529,7 +502,7 @@
         "hidden": false
     },
     {
-        "id": "af49c99a58cfecfb",
+        "id": "8f31a187f2ee3a27",
         "type": "global-config",
         "env": [],
         "modules": {
